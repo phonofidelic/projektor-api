@@ -1,7 +1,17 @@
 const Project = require('../models/project.model');
 
 module.exports.createProject = async (req, res, next) => {
-  const { userId } = req;
+  // const { userId } = req;
+  const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+
+  const {
+    title,
+    description,
+    client,
+    budgetedTime,
+    startDate,
+    deadline
+  } = req.body;
 
   console.log('====================================');
   console.log('req.body:', req.body);
@@ -9,11 +19,33 @@ module.exports.createProject = async (req, res, next) => {
 
   let newProject;
   try {
-    newProject = await Project({
-      ...req.body
+    newProject = await new Project({
+      userId,
+      created: Date.now(),
+      title,
+      description,
+      client,
+      budgetedTime,
+      startDate,
+      deadline
     }).save();
   } catch (err) {
     console.error(err);
+    next(err);
   }
   res.status(200).json({ project: newProject });
+};
+
+module.exports.getProjects = async (req, res, next) => {
+  // const { userId } = req;
+  const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+
+  let projects;
+  try {
+    projects = await Project.find({ userId }); // TODO: find by userId
+    res.json(projects);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 };

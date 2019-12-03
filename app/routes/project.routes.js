@@ -1,5 +1,10 @@
 const router = require('express').Router();
-const { createProject } = require('../contollers/project.controller');
+const {
+  getProjects,
+  createProject
+} = require('../contollers/project.controller');
+
+router.get('/', getProjects);
 
 router.post('/create', createProject);
 
