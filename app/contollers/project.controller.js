@@ -29,11 +29,12 @@ module.exports.createProject = async (req, res, next) => {
       startDate,
       deadline
     }).save();
+
+    res.status(200).json({ project: newProject });
   } catch (err) {
     console.error(err);
     next(err);
   }
-  res.status(200).json({ project: newProject });
 };
 
 module.exports.getProjects = async (req, res, next) => {
@@ -43,6 +44,7 @@ module.exports.getProjects = async (req, res, next) => {
   let projects;
   try {
     projects = await Project.find({ userId, status: 'active' }); // TODO: find by userId
+
     res.json(projects);
   } catch (err) {
     console.error(err);
@@ -57,7 +59,9 @@ module.exports.getProject = async (req, res, next) => {
 
   let project;
   try {
-    project = await Project.findOne({ userId, _id: projectId });
+    project = await Project.findOne({ userId, _id: projectId }).populate({
+      path: 'work'
+    });
     res.json(project);
   } catch (err) {
     console.error(err);

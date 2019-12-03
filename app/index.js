@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const projectRoutes = require('./routes/project.routes');
+const workRoutes = require('./routes/work.routes');
 const { DB_CONNECTION } = require('../config/keys');
 
 const app = express();
@@ -32,6 +33,7 @@ app.get('/', (req, res, next) => {
 
 // Register API routes
 app.use('/projects', projectRoutes);
+app.use('/work', workRoutes);
 
 // Catch all unhandled routes
 app.use('/*', (req, res) => {
