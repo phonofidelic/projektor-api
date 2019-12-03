@@ -42,7 +42,7 @@ module.exports.getProjects = async (req, res, next) => {
 
   let projects;
   try {
-    projects = await Project.find({ userId }); // TODO: find by userId
+    projects = await Project.find({ userId, status: 'active' }); // TODO: find by userId
     res.json(projects);
   } catch (err) {
     console.error(err);
