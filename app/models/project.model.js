@@ -11,6 +11,7 @@ const ProjectSchema = new Schema({
   deadline: { type: Date },
   client: { type: String },
   budgetedTime: { type: Number },
+  timeUsed: { type: Number, default: 0 },
   work: [{ type: Schema.Types.ObjectId, ref: 'Work' }]
 });
 
