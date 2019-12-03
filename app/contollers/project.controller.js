@@ -49,3 +49,18 @@ module.exports.getProjects = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports.getProject = async (req, res, next) => {
+  // const { userId } = req;
+  const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  const { projectId } = req.params;
+
+  let project;
+  try {
+    project = await Project.findOne({ userId, _id: projectId });
+    res.json(project);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
