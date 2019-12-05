@@ -18,6 +18,7 @@ WorkSchema.pre('save', async function(next) {
   console.log('WorkSchema, pre-save, this:', this);
   const project = await Project.findById(this.projectId);
   project.work.push(this._id);
+  await project.update({ $inc: { timeUsed: this.duration } });
   project.save();
   next();
 });
