@@ -30,7 +30,7 @@ module.exports.createProject = async (req, res, next) => {
       deadline
     }).save();
 
-    res.status(200).json({ project: newProject });
+    res.status(200).json(newProject);
   } catch (err) {
     console.error(err);
     next(err);
