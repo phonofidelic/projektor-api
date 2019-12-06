@@ -1,4 +1,10 @@
 const Project = require('../models/project.model');
+const {
+  ACTIVE,
+  COMPLETE,
+  ARCHIVED,
+  DELETED
+} = require('../../constants').STATUS;
 
 module.exports.createProject = async (req, res, next) => {
   // const { userId } = req;
@@ -66,5 +72,24 @@ module.exports.getProject = async (req, res, next) => {
   } catch (err) {
     console.error(err);
     next(err);
+  }
+};
+
+module.exports.deleteProject = async (req, res, next) => {
+  // const { userId } = req;
+  const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  const { projectId } = req.params;
+
+  let project;
+  try {
+    project = await Project.findByIdAndUpdate(
+      projectId,
+      { status: DELETED },
+      { new: true }
+    );
+
+    res.json(project);
+  } catch (err) {
+    return next(err);
   }
 };
