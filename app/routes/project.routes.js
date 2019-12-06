@@ -12,6 +12,6 @@ router.get('/:projectId', getProject);
 
 router.post('/create', createProject);
 
-router.delete('/:projectId', deleteProject);
+router.put('/:projectId/status/delete', deleteProject);
 
 module.exports = router;
