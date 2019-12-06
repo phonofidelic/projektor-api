@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const passport = require('passport');
 const cors = require('cors');
+const authRoutes = require('./routes/auth.routes');
 const projectRoutes = require('./routes/project.routes');
 const workRoutes = require('./routes/work.routes');
 const { DB_CONNECTION } = require('../config/keys');
@@ -17,6 +19,7 @@ db.on('open', () => console.log('DB connection successfull!'));
 // Configure middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(passport.initialize());
 
 // Configure access-control headers
 // app.use((req, res, next) => {
@@ -34,6 +37,7 @@ app.get('/', (req, res, next) => {
 });
 
 // Register API routes
+app.use('/auth', authRoutes);
 app.use('/projects', projectRoutes);
 app.use('/work', workRoutes);
 

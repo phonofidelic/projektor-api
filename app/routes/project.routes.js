@@ -4,7 +4,7 @@ const {
   createProject,
   getProject,
   deleteProject
-} = require('../contollers/project.controller');
+} = require('../controllers/project.controller');
 
 router.get('/', getProjects);
 
