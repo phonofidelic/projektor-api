@@ -98,12 +98,7 @@ exports.registerNewUser = (req, res, next) => {
         secure: process.env.NODE_ENV === 'production'
       });
 
-      res.json({
-        message: STRINGS.user_registration_success,
-        token,
-        refreshToken,
-        user: userInfo
-      });
+      res.json(userInfo);
     });
   });
 };
