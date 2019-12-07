@@ -10,6 +10,8 @@ const { DB_CONNECTION } = require('../config/keys');
 
 const app = express();
 
+app.use(passport.initialize());
+
 // Configure db
 mongoose.connect(DB_CONNECTION, { useNewUrlParser: true });
 const db = mongoose.connection;
@@ -19,7 +21,6 @@ db.on('open', () => console.log('DB connection successfull!'));
 // Configure middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(passport.initialize());
 
 // Configure access-control headers
 // app.use((req, res, next) => {

@@ -119,12 +119,7 @@ exports.login = (req, res, next) => {
     secure: process.env.NODE_ENV === 'production'
   });
 
-  res.json({
-    message: 'Login successfull',
-    token,
-    refreshToken,
-    user: userInfo
-  });
+  res.json(userInfo);
 };
 
 exports.requireAuth = (req, res, next) => {
