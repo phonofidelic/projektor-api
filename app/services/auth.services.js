@@ -5,7 +5,7 @@ const { JWT_SECRET, JWT_EXP, JWT_AUD, JWT_ISS } = require('../../config/keys');
 const generateToken = (user, refreshToken) => {
   return jwt.sign({ ...user, rt: refreshToken }, JWT_SECRET, {
     expiresIn: JWT_EXP,
-    // expiresIn: '2s',
+    // expiresIn: '5s',
     audience: JWT_AUD,
     issuer: JWT_ISS,
     jwtid: uuidv4(),
@@ -26,6 +26,9 @@ exports.handleExpiredToken = (req, res, next) => {
   const refreshToken = decoded.rt;
 
   // Check refresh token store
+  console.log('====================================');
+  console.log('refreshTokens:', refreshTokens);
+  console.log('====================================');
   if (refreshToken in refreshTokens && refreshTokens[refreshToken] == userId) {
     console.log('\n*** VALID REFRESH ***');
 
@@ -35,12 +38,8 @@ exports.handleExpiredToken = (req, res, next) => {
 
     const token = generateToken({ _id: userId }, newRefreshToken);
 
-    res.cookie('JWT', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production'
-    });
-
     req.userId = userId;
+    req.token = token;
     return next();
   } else {
     console.log('\n*** NO VALID REFRESH TOKEN FOUND, NEW LOGIN REQUIRED ***');

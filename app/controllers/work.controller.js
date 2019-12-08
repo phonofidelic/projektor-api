@@ -1,8 +1,7 @@
 const Work = require('../models/work.model');
 
 module.exports.createWork = async (req, res, next) => {
-  // const { userId } = req;
-  const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  const { userId, token } = req;
   const { projectId, date, start, end, duration } = req.body;
 
   let newWork;
@@ -16,7 +15,7 @@ module.exports.createWork = async (req, res, next) => {
       duration
     }).save();
 
-    res.json(newWork);
+    res.json({ data: newWork, token });
   } catch (err) {
     console.error(err);
     next(err);

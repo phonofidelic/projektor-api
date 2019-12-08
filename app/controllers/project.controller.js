@@ -19,10 +19,6 @@ module.exports.createProject = async (req, res, next) => {
     deadline
   } = req.body;
 
-  console.log('====================================');
-  console.log('req.body:', req.body);
-  console.log('====================================');
-
   let newProject;
   try {
     newProject = await new Project({
@@ -44,16 +40,13 @@ module.exports.createProject = async (req, res, next) => {
 };
 
 module.exports.getProjects = async (req, res, next) => {
-  const { userId } = req;
-  // const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
-  console.log('====================================');
-  console.log('userId:', userId);
-  console.log('====================================');
+  const { userId, token } = req;
+
   let projects;
   try {
-    projects = await Project.find({ userId, status: 'active' }); // TODO: find by userId
+    projects = await Project.find({ userId, status: 'active' });
 
-    res.json(projects);
+    res.json({ data: projects, token });
   } catch (err) {
     console.error(err);
     next(err);
@@ -61,8 +54,8 @@ module.exports.getProjects = async (req, res, next) => {
 };
 
 module.exports.getProject = async (req, res, next) => {
-  const { userId } = req;
-  // const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  const { userId, token } = req;
+
   const { projectId } = req.params;
 
   let project;
@@ -70,7 +63,7 @@ module.exports.getProject = async (req, res, next) => {
     project = await Project.findOne({ userId, _id: projectId }).populate({
       path: 'work'
     });
-    res.json(project);
+    res.json({ data: project, token });
   } catch (err) {
     console.error(err);
     next(err);
@@ -78,8 +71,8 @@ module.exports.getProject = async (req, res, next) => {
 };
 
 module.exports.deleteProject = async (req, res, next) => {
-  const { userId } = req;
-  // const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  const { userId, token } = req;
+
   const { projectId } = req.params;
 
   let project;
@@ -90,7 +83,7 @@ module.exports.deleteProject = async (req, res, next) => {
       { new: true }
     );
 
-    res.json(project);
+    res.json({ data: project, token });
   } catch (err) {
     return next(err);
   }
