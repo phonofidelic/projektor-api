@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const cors = require('cors');
@@ -9,6 +10,9 @@ const workRoutes = require('./routes/work.routes');
 const { DB_CONNECTION } = require('../config/keys');
 
 const app = express();
+
+// TODO: Create DB or memory store (Redis?)
+refreshTokens = {};
 
 app.use(passport.initialize());
 
@@ -21,6 +25,7 @@ db.on('open', () => console.log('DB connection successfull!'));
 // Configure middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Configure access-control headers
 // app.use((req, res, next) => {
@@ -44,7 +49,7 @@ app.use('/work', workRoutes);
 
 // Catch all unhandled routes
 app.use('/*', (req, res) => {
-  res.status(404).json({ message: 'Recource not found' });
+  res.status(404).json({ message: 'Resource not found' });
 });
 
 app.use((err, req, res, next) => {

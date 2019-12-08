@@ -7,8 +7,8 @@ const {
 } = require('../../constants').STATUS;
 
 module.exports.createProject = async (req, res, next) => {
-  // const { userId } = req;
-  const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  const { userId } = req;
+  // const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
 
   const {
     title,
@@ -44,9 +44,11 @@ module.exports.createProject = async (req, res, next) => {
 };
 
 module.exports.getProjects = async (req, res, next) => {
-  // const { userId } = req;
-  const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
-
+  const { userId } = req;
+  // const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  console.log('====================================');
+  console.log('userId:', userId);
+  console.log('====================================');
   let projects;
   try {
     projects = await Project.find({ userId, status: 'active' }); // TODO: find by userId
@@ -59,8 +61,8 @@ module.exports.getProjects = async (req, res, next) => {
 };
 
 module.exports.getProject = async (req, res, next) => {
-  // const { userId } = req;
-  const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  const { userId } = req;
+  // const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
   const { projectId } = req.params;
 
   let project;
@@ -76,8 +78,8 @@ module.exports.getProject = async (req, res, next) => {
 };
 
 module.exports.deleteProject = async (req, res, next) => {
-  // const { userId } = req;
-  const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  const { userId } = req;
+  // const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
   const { projectId } = req.params;
 
   let project;

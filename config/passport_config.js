@@ -7,7 +7,7 @@ const { JWT_SECRET } = require('./keys');
 
 const localOptions = { usernameField: 'email' };
 const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromHeader('token'),
+  jwtFromRequest: ExtractJwt.fromHeader('authorization'),
   secretOrKey: JWT_SECRET
 };
 
