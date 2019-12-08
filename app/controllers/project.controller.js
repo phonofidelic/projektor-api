@@ -7,8 +7,7 @@ const {
 } = require('../../constants').STATUS;
 
 module.exports.createProject = async (req, res, next) => {
-  const { userId } = req;
-  // const userId = '0a1e4fdd-28c8-4c84-a7e8-db9e22602ed2'; // Mock userId
+  const { userId, token } = req;
 
   const {
     title,
@@ -32,7 +31,7 @@ module.exports.createProject = async (req, res, next) => {
       deadline
     }).save();
 
-    res.status(200).json(newProject);
+    res.status(200).json({ data: newProject, token });
   } catch (err) {
     console.error(err);
     next(err);
@@ -83,7 +82,7 @@ module.exports.deleteProject = async (req, res, next) => {
       { new: true }
     );
 
-    res.json({ data: project, token });
+    res.json({ data: project._id, token });
   } catch (err) {
     return next(err);
   }
