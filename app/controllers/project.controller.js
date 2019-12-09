@@ -40,10 +40,14 @@ module.exports.createProject = async (req, res, next) => {
 
 module.exports.getProjects = async (req, res, next) => {
   const { userId, token } = req;
+  const { status } = req.query;
+  console.log('====================================');
+  console.log('getProjects, req.query:', req.query);
+  console.log('====================================');
 
   let projects;
   try {
-    projects = await Project.find({ userId, status: 'active' });
+    projects = await Project.find({ userId, status });
 
     res.json({ data: projects, token });
   } catch (err) {
