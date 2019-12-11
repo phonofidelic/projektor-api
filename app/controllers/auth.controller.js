@@ -55,7 +55,7 @@ exports.login = (req, res, next) => {
 
   const refreshToken = uuidv4();
   // TODO: Set refresh token in DB
-  global.refreshTokens[refreshToken] = req.user._id;
+  refreshTokens[refreshToken] = req.user._id;
 
   const token = generateToken(userInfo, refreshToken);
   userInfo.token = token;
@@ -66,8 +66,11 @@ exports.login = (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
-  const { userId } = req;
+  const { userId, refreshToken } = req;
 
-  delete refreshTokens[userId];
+  delete refreshTokens[refreshToken];
+  console.log('====================================');
+  console.log('refreshTokens after logout:', refreshTokens);
+  console.log('====================================');
   res.status(200).json({ message: 'You are now signed out' });
 };
