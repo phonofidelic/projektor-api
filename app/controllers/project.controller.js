@@ -80,9 +80,27 @@ module.exports.deleteProject = async (req, res, next) => {
 
   let project;
   try {
-    project = await Project.findByIdAndUpdate(
-      projectId,
+    project = await Project.findOneAndUpdate(
+      { _id: projectId, userId },
       { status: DELETED },
+      { new: true }
+    );
+
+    res.json({ data: project._id, token });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports.setProjectStatus = async (req, res, next) => {
+  const { userId, token } = req;
+  const { projectId, status } = req.body;
+
+  let project;
+  try {
+    project = await Project.findOneAndUpdate(
+      { _id: projectId, userId },
+      { status },
       { new: true }
     );
 
