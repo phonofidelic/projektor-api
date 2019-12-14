@@ -95,15 +95,15 @@ module.exports.deleteProject = async (req, res, next) => {
   const { userId, token } = req;
   const { projectId } = req.params;
 
-  let project;
+  let deletedProject;
   try {
-    project = await Project.findOneAndUpdate(
-      { _id: projectId, userId },
-      { status: DELETED },
-      { new: true }
-    );
+    deletedProject = await Project.findOneAndDelete({
+      _id: projectId,
+      userId,
+      status: DELETED
+    });
 
-    res.json({ data: project._id, token });
+    res.json({ data: deletedProject._id, token });
   } catch (err) {
     return next(err);
   }
@@ -112,17 +112,10 @@ module.exports.deleteProject = async (req, res, next) => {
 module.exports.deleteAllTrash = async (req, res, next) => {
   const { userId, token } = req;
 
-  console.log('====================================');
-  console.log('deleteAllTrash, userId:', userId);
-  console.log('====================================');
-
   let deletedProjects;
   try {
     deletedProjects = await Project.deleteMany({ userId, status: DELETED });
 
-    console.log('====================================');
-    console.log('deletedProjects:', deletedProjects);
-    console.log('====================================');
     res.json({ data: deletedProjects, token });
   } catch (err) {
     return next(err);
