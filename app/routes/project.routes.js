@@ -4,7 +4,8 @@ const {
   createProject,
   getProject,
   deleteProject,
-  setProjectStatus
+  setProjectStatus,
+  deleteAllTrash
 } = require('../controllers/project.controller');
 const requireAuth = require('../middlewares/requireAuth');
 
@@ -13,5 +14,6 @@ router.get('/:projectId', requireAuth, getProject);
 router.post('/create', requireAuth, createProject);
 router.put('/:projectId/status/delete', requireAuth, deleteProject);
 router.put('/:projectId/status', requireAuth, setProjectStatus);
+router.delete('/removed/delete', requireAuth, deleteAllTrash);
 
 module.exports = router;
