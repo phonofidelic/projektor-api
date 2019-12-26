@@ -17,7 +17,10 @@ refreshTokens = {};
 app.use(passport.initialize());
 
 // Configure db
-mongoose.connect(DB_CONNECTION, { useNewUrlParser: true });
+mongoose.connect(DB_CONNECTION, {
+  useNewUrlParser: true,
+  useFindAndModify: false
+});
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'DB connection error'));
 db.on('open', () => console.log('DB connection successfull!'));

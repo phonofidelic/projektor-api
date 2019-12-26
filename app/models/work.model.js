@@ -14,14 +14,34 @@ const WorkSchema = new Schema({
 });
 
 WorkSchema.pre('save', async function(next) {
-  await Project.updateOne(
-    { _id: this.projectId },
-    {
-      $inc: { timeUsed: this.duration },
-      $push: { work: this._id }
-    }
-  );
-  next();
+  try {
+    await Project.updateOne(
+      { _id: this.projectId, userId: this.userId },
+      {
+        $inc: { timeUsed: this.duration },
+        $push: { work: this._id }
+      }
+    );
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+WorkSchema.pre('remove', async function(next) {
+  try {
+    await Project.updateOne(
+      { _id: this.projectId, userId: this.userId },
+      {
+        $inc: { timeUsed: -this.projectId },
+        $pull: { work: this._id }
+      }
+    );
+    next();
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 });
 
 module.exports = mongoose.model('Work', WorkSchema);
