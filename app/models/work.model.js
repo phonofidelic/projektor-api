@@ -29,11 +29,12 @@ WorkSchema.pre('save', async function(next) {
 });
 
 WorkSchema.pre('remove', async function(next) {
+  console.log('*** PRE REMOVE');
   try {
     await Project.updateOne(
       { _id: this.projectId, userId: this.userId },
       {
-        $inc: { timeUsed: -this.projectId },
+        $inc: { timeUsed: -this.duration },
         $pull: { work: this._id }
       }
     );

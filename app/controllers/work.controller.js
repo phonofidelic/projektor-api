@@ -47,12 +47,14 @@ module.exports.updateWork = async (req, res, next) => {
 
 module.exports.removeWork = async (req, res, next) => {
   const { userId, token } = req;
-  const { workId } = req.body;
+  const { workId } = req.params;
 
-  let deletedWork;
+  let workToRemove;
   try {
-    deletedWork = await Work.findOneAndRemove({ userId, workId });
-    res.json({ data: deletedWork, token });
+    workToRemove = await Work.findOne({ _id: workId, userId });
+    console.log('*** workToRemove:', workToRemove);
+    await workToRemove.remove();
+    res.json({ data: workToRemove, token });
   } catch (err) {
     console.error(err);
     next(err);
