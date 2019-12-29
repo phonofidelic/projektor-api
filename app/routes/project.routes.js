@@ -3,6 +3,7 @@ const {
   getProjects,
   createProject,
   getProject,
+  editProject,
   deleteProject,
   setProjectStatus,
   deleteAllTrash
@@ -10,8 +11,9 @@ const {
 const requireAuth = require('../middlewares/requireAuth');
 
 router.get('/', requireAuth, getProjects);
-router.get('/:projectId', requireAuth, getProject);
 router.post('/create', requireAuth, createProject);
+router.get('/:projectId', requireAuth, getProject);
+router.put('/:projectId', requireAuth, editProject);
 router.put('/:projectId/status/delete', requireAuth, deleteProject);
 router.put('/:projectId/status', requireAuth, setProjectStatus);
 router.delete('/removed/delete/:projectId', requireAuth, deleteProject);

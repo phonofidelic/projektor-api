@@ -73,6 +73,30 @@ module.exports.getProject = async (req, res, next) => {
   }
 };
 
+module.exports.editProject = async (req, res, next) => {
+  const { userId, token } = req;
+  const { projectId } = req.params;
+  const { projectInfo } = req.body;
+
+  console.log('====================================');
+  console.log('*** editProject, projectInfo:', projectInfo);
+  console.log('====================================');
+
+  let updatedProject;
+  try {
+    updatedProject = await Project.findOneAndUpdate(
+      { userId, _id: projectId },
+      projectInfo,
+      { new: true }
+    );
+    console.log('*** editProject, updatedProject:', updatedProject);
+    res.json({ data: updatedProject, token });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
 module.exports.setProjectStatus = async (req, res, next) => {
   const { userId, token } = req;
   const { projectId, status } = req.body;
