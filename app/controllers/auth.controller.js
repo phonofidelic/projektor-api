@@ -74,3 +74,16 @@ exports.logout = (req, res, next) => {
   console.log('====================================');
   res.status(200).json({ message: 'You are now signed out' });
 };
+
+exports.getUserInfo = async (req, res, next) => {
+  const { userId, token } = req;
+
+  let userInfo;
+  try {
+    userInfo = await User.findById(userId, 'email');
+    res.json({ data: userInfo, token });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};

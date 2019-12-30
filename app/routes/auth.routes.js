@@ -5,7 +5,8 @@ const {
   // requireAuth,
   registerNewUser,
   login,
-  logout
+  logout,
+  getUserInfo
 } = require('../controllers/auth.controller');
 const requireAuth = require('../middlewares/requireAuth');
 
@@ -14,5 +15,6 @@ const requireLogin = passport.authenticate('local', { session: false });
 router.post('/register', registerNewUser);
 router.post('/login', requireLogin, login);
 router.post('/logout', requireAuth, logout);
+router.get('/user', requireAuth, getUserInfo);
 
 module.exports = router;
