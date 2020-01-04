@@ -28,15 +28,15 @@ module.exports.updateWork = async (req, res, next) => {
   const { workData } = req.body;
   const { workId } = req.params;
 
-  console.log('====================================');
-  console.log('updateWork, workData:', workData);
-  console.log('====================================');
-
   let updatedWork;
   try {
-    updatedWork = await Work.findOneAndUpdate({ _id: workId }, workData, {
-      new: true
-    });
+    updatedWork = await Work.findOneAndUpdate(
+      { _id: workId, userId },
+      workData,
+      {
+        new: true
+      }
+    );
     console.log('*** updatedWork:', updatedWork);
     res.json({ data: updatedWork, token });
   } catch (err) {
@@ -55,6 +55,32 @@ module.exports.removeWork = async (req, res, next) => {
     console.log('*** workToRemove:', workToRemove);
     await workToRemove.remove();
     res.json({ data: workToRemove, token });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+module.exports.getWorkByInterval = async (req, res, next) => {
+  const { userId, token } = req;
+  const { start, end } = req.params;
+
+  console.log('====================================');
+  // console.log('start:', start);
+  // console.log('end:', end);
+  console.log('req.params:', req.params);
+  console.log('====================================');
+
+  const querry = {
+    userId,
+    start: { $gte: start, $lte: end }
+  };
+
+  let results;
+  try {
+    results = await Work.find(querry);
+    console.log('\n*** getAllWorkByInterval, results:', results);
+    res.json({ data: results, token });
   } catch (err) {
     console.error(err);
     next(err);
