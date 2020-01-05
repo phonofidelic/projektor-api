@@ -1,5 +1,5 @@
 module.exports = {
-  PORT: 4000,
+  PORT: process.env.PORT,
   DB_CONNECTION: process.env.DB_CONNECTION,
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXP: '15m',
