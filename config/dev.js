@@ -4,5 +4,7 @@ module.exports = {
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXP: '15m',
   JWT_AUD: 'projektor_client',
-  JWT_ISS: 'projektor_api'
+  JWT_ISS: 'projektor_api',
+  SES_KEY: process.env.SES_KEY,
+  SES_SECRET: process.env.SES_SECRET
 };
