@@ -25,6 +25,10 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'DB connection error'));
 db.on('open', () => console.log('DB connection successfull!'));
 
+// Set view engin
+app.set('view engine', 'pug');
+app.set('views', './app/views');
+
 // Configure middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -44,6 +48,9 @@ app.use(cors());
 app.get('/', (req, res, next) => {
   res.send('Hello World!');
 });
+
+// Serve static assets
+app.use(express.static('public'));
 
 // Register API routes
 app.use('/auth', authRoutes);

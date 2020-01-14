@@ -6,7 +6,8 @@ const {
   registerNewUser,
   login,
   logout,
-  getUserInfo
+  getUserInfo,
+  verifyUser
 } = require('../controllers/auth.controller');
 const { sendTestEmail } = require('../services/mail.services');
 const requireAuth = require('../middlewares/requireAuth');
@@ -17,8 +18,12 @@ router.post('/register', registerNewUser);
 router.post('/login', requireLogin, login);
 router.post('/logout', requireAuth, logout);
 router.get('/user', requireAuth, getUserInfo);
+router.get('/confirmation/:token', verifyUser);
+// router.post('/resend', userController.resendTokenPost);
+
 router.post('/testemail', async (req, res, next) => {
   let response;
+
   try {
     response = await sendTestEmail();
     res.json({ data: response });

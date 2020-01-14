@@ -30,3 +30,22 @@ exports.sendTestEmail = () => {
     });
   });
 };
+
+exports.sendContfirmationEmail = emailParams => {
+  const client = ses.createClient({
+    key: SES_KEY,
+    secret: SES_SECRET,
+    amazon: 'https://email.us-west-2.amazonaws.com'
+  });
+
+  return new Promise((resolve, reject) => {
+    client.sendEmail(emailParams, (err, data) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      console.log('sendContfirmationEmail response:', data);
+      resolve(data);
+    });
+  });
+};

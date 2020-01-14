@@ -19,7 +19,10 @@ const UserSchema = new Schema({
     validate: [email => emailRegex.test(email), STRINGS.email_validation_msg],
     match: [emailRegex, STRINGS.email_validation_msg]
   },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  isVerified: { type: Boolean, default: false },
+  passwordResetToken: String,
+  passwordResetExpires: Date
 });
 
 // Encrypt password before saving to DB
