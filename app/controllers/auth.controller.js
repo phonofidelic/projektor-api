@@ -3,7 +3,13 @@ const Token = require('../models/token.model');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
-const { JWT_SECRET, JWT_EXP, JWT_AUD, JWT_ISS } = require('../../config/keys');
+const {
+  JWT_SECRET,
+  JWT_EXP,
+  JWT_AUD,
+  JWT_ISS,
+  DOMAIN
+} = require('../../config/keys');
 const { generateToken } = require('../services/auth.services');
 const { sendContfirmationEmail } = require('../services/mail.services');
 
@@ -59,7 +65,7 @@ exports.registerNewUser = (req, res, next) => {
         from: 'team@projektorapp.com',
         subject: 'Welcom to Projektor!',
         message: `Welcom to Projektor!
-        <img src="https://www.projektorapp.com/static/media/logo.88c4103b.svg" alt="Projektor logo"/>
+        <img src="https://projektor-api.herokuapp.com/logo.svg" alt="Projektor logo"/>
         <br/>
         <br/>
         To verify your email, plese visit the link below:<br/>

@@ -6,5 +6,6 @@ module.exports = {
   JWT_AUD: 'projektor_client',
   JWT_ISS: 'projektor_api',
   SES_KEY: process.env.SES_KEY,
-  SES_SECRET: process.env.SES_SECRET
+  SES_SECRET: process.env.SES_SECRET,
+  DOMAIN: 'http://localhost:4000'
 };
