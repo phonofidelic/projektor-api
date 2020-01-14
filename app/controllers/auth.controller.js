@@ -64,17 +64,18 @@ exports.registerNewUser = (req, res, next) => {
         to: email,
         from: 'team@projektorapp.com',
         subject: 'Welcom to Projektor!',
-        message: `Welcom to Projektor!
-        <img src="https://projektor-api.herokuapp.com/logo.svg" alt="Projektor logo"/>
+        message: `<img src="https://projektor-api.herokuapp.com/logo.svg" alt="Projektor logo"/><br/>
         <br/>
         <br/>
+        Welcom to Projektor!<br/>
         To verify your email, plese visit the link below:<br/>
         <br/>
         <a href="${
           process.env.NODE_ENV === 'production' ? 'https://' : 'http://'
         }${req.headers.host}/auth/confirmation/${
           confirmationToken.value
-        }">Verify Email</a>`
+        }">Verify Email</a><br/>
+        `
       };
 
       try {
