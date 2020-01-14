@@ -1,0 +1,13 @@
+body {
+  text-align: center;
+  font-family: sans-serif;
+  margin: 80px;
+}
+
+.logo {
+  max-width: 800px;
+}
+
+.title {
+  margin-top: 100px;
+}

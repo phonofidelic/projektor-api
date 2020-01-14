@@ -5,5 +5,6 @@ module.exports = {
   JWT_EXP: '15m',
   JWT_AUD: 'projektor_client',
   JWT_ISS: 'projektor_api',
-  DOMAIN: 'https://projektor-api.herokuapp.com'
+  DOMAIN: 'https://projektor-api.herokuapp.com',
+  CLIENT_DOMAIN: 'https://www.projektorapp.com'
 };

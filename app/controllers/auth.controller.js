@@ -8,7 +8,8 @@ const {
   JWT_EXP,
   JWT_AUD,
   JWT_ISS,
-  DOMAIN
+  DOMAIN,
+  CLIENT_DOMAIN
 } = require('../../config/keys');
 const { generateToken } = require('../services/auth.services');
 const { sendContfirmationEmail } = require('../services/mail.services');
@@ -162,7 +163,11 @@ exports.verifyUser = async (req, res, next) => {
   try {
     await user.save();
     // res.status(200).json({ data: 'User is verified' });
-    res.render('confirmation', { user: `${user.email.split('@')[0]}` });
+    res.render('confirmation', {
+      user: `${user.email.split('@')[0]}`,
+      link: `${CLIENT_DOMAIN}/projects`,
+      domain: DOMAIN
+    });
   } catch (err) {
     next(err);
   }

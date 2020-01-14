@@ -1,11 +1,10 @@
+doctype html
 html
   head
     title="Welcome to Projektor!"
-    //- style.
-    //-   p {
-
-    //-   }
+    link(rel="stylesheet" href="/confirmation.css")
   body
-    h1 Welcome to Projektor!
+    img(src=`${domain}/logo.svg`, alt="Projector logo" class='logo')
+    h1(class='title') Welcome to Projektor!
     p Hi, #{user}! Your account has now been verified
-    a(href="https://www.projektorapp.com/projects") "back to  projector ->"
+    a(href=`${link}`) <- back to  projector
