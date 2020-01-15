@@ -12,7 +12,7 @@ const {
   CLIENT_DOMAIN
 } = require('../../config/keys');
 const { generateToken } = require('../services/auth.services');
-const { sendContfirmationEmail } = require('../services/mail.services');
+const { sendConfirmationEmail } = require('../services/mail.services');
 
 const STRINGS = {
   user_registration_success: 'new user registered',
@@ -22,7 +22,8 @@ const STRINGS = {
 const setUserInfo = user => {
   return {
     _id: user._id,
-    email: user.email
+    email: user.email,
+    isVerified: user.isVerified
   };
 };
 
@@ -64,23 +65,23 @@ exports.registerNewUser = (req, res, next) => {
       const emailParams = {
         to: email,
         from: 'team@projektorapp.com',
-        subject: 'Welcom to Projektor!',
+        subject: 'Welcome to Projektor!',
         message: `<img src="https://projektor-api.herokuapp.com/logo.svg" alt="Projektor logo"/><br/>
         <br/>
         <br/>
-        Welcom to Projektor!<br/>
-        To verify your email, plese visit the link below:<br/>
+        Welcome to Projektor!<br/>
+        To verify your email, please visit the link below:<br/>
         <br/>
         <a href="${
           process.env.NODE_ENV === 'production' ? 'https://' : 'http://'
-        }${req.headers.host}/auth/confirmation/${
+        }${req.headers.host}/auth/verify/${
           confirmationToken.value
         }">Verify Email</a><br/>
         `
       };
 
       try {
-        await sendContfirmationEmail(emailParams);
+        await sendConfirmationEmail(emailParams);
       } catch (err) {
         res.next(err);
       }
@@ -88,6 +89,66 @@ exports.registerNewUser = (req, res, next) => {
       res.json(userInfo);
     });
   });
+};
+
+exports.resendVerification = async (req, res, next) => {
+  const { userId } = req;
+
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    return next(err);
+  }
+
+  /**
+   * Remove any remaining verification token associated with the user
+   */
+  let removedTokens;
+  try {
+    removedTokens = Token.deleteMany({ userId });
+  } catch (err) {
+    return next(err);
+  }
+  console.log('====================================');
+  console.log('removed verification tokens:', removedTokens);
+  console.log('====================================');
+
+  /**
+   * Create new verification token
+   */
+  const confirmationToken = new Token({
+    userId: user._id,
+    value: crypto.randomBytes(16).toString('hex')
+  });
+  confirmationToken.save(async err => {
+    if (err) return next(err);
+  });
+
+  const emailParams = {
+    to: email,
+    from: 'team@projektorapp.com',
+    subject: 'New Projektor verification link',
+    message: `<img src="https://projektor-api.herokuapp.com/logo.svg" alt="Projektor logo"/><br/>
+    <br/>
+    <br/>
+    Hello again!<br/>
+    Here is your new verification link.<br/>
+    To verify your email, please visit the link below:<br/>
+    <br/>
+    <a href="${process.env.NODE_ENV === 'production' ? 'https://' : 'http://'}${
+      req.headers.host
+    }/auth/verify/${confirmationToken.value}">Verify Email</a><br/>
+    `
+  };
+
+  try {
+    await sendConfirmationEmail(emailParams);
+  } catch (err) {
+    res.next(err);
+  }
+
+  res.json(userInfo);
 };
 
 exports.login = (req, res, next) => {

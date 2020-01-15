@@ -9,8 +9,9 @@ const {
   deleteAllTrash
 } = require('../controllers/project.controller');
 const requireAuth = require('../middlewares/requireAuth');
+const requireVerification = require('../middlewares/requireVerification');
 
-router.get('/', requireAuth, getProjects);
+router.get('/', requireAuth, requireVerification, getProjects);
 router.post('/create', requireAuth, createProject);
 router.get('/:projectId', requireAuth, getProject);
 router.put('/:projectId', requireAuth, editProject);

@@ -31,7 +31,7 @@ exports.sendTestEmail = () => {
   });
 };
 
-exports.sendContfirmationEmail = emailParams => {
+exports.sendConfirmationEmail = emailParams => {
   const client = ses.createClient({
     key: SES_KEY,
     secret: SES_SECRET,
@@ -44,7 +44,7 @@ exports.sendContfirmationEmail = emailParams => {
         console.error(err);
         reject(err);
       }
-      console.log('sendContfirmationEmail response:', data);
+      console.log('sendConfirmationEmail response:', data);
       resolve(data);
     });
   });
