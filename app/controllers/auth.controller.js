@@ -106,7 +106,7 @@ exports.resendVerification = async (req, res, next) => {
    */
   let removedTokens;
   try {
-    removedTokens = Token.deleteMany({ userId });
+    removedTokens = await Token.deleteMany({ userId });
   } catch (err) {
     return next(err);
   }
@@ -126,7 +126,7 @@ exports.resendVerification = async (req, res, next) => {
   });
 
   const emailParams = {
-    to: email,
+    to: user.email,
     from: 'team@projektorapp.com',
     subject: 'New Projektor verification link',
     message: `<img src="https://projektor-api.herokuapp.com/logo.svg" alt="Projektor logo"/><br/>
@@ -148,7 +148,7 @@ exports.resendVerification = async (req, res, next) => {
     res.next(err);
   }
 
-  res.json(userInfo);
+  res.json({ message: 'Verification email sent' });
 };
 
 exports.login = (req, res, next) => {
