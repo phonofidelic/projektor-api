@@ -145,7 +145,7 @@ exports.resendVerification = async (req, res, next) => {
   try {
     await sendConfirmationEmail(emailParams);
   } catch (err) {
-    res.next(err);
+    return next(err);
   }
 
   res.json({ message: 'Verification email sent' });
