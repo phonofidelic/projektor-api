@@ -2,9 +2,6 @@ process.env.DEBUG = 'node-ses';
 const ses = require('node-ses');
 const { SES_KEY, SES_SECRET } = require('../../config/keys');
 
-console.log('SES_KEY:', SES_KEY);
-console.log('SES_SECRET:', SES_SECRET);
-
 exports.sendTestEmail = () => {
   const client = ses.createClient({
     key: SES_KEY,
