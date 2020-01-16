@@ -64,9 +64,7 @@ app.use('/*', (req, res) => {
 
 app.use((err, req, res, next) => {
   console.error('\n### FROM ERROR HANDLER:', err);
-  res
-    .status(500)
-    .json({ message: err.message || STRINGS.default_server_error });
+  res.status(500).json({ message: err.message || 'Something went wrong...' });
 });
 
 module.exports = app;
