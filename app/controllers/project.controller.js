@@ -47,7 +47,7 @@ module.exports.getProjects = async (req, res, next) => {
 
   let projects;
   try {
-    projects = await Project.find({ userId, status });
+    projects = await Project.find({ userId });
 
     res.json({ data: projects, token });
   } catch (err) {
