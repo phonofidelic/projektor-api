@@ -40,7 +40,6 @@ module.exports.createProject = async (req, res, next) => {
 
 module.exports.getProjects = async (req, res, next) => {
   const { userId, token } = req;
-  const { status } = req.query;
   console.log('====================================');
   console.log('getProjects, req.query:', req.query);
   console.log('====================================');
