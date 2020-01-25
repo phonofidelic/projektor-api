@@ -61,6 +61,19 @@ module.exports.removeWork = async (req, res, next) => {
   }
 };
 
+module.exports.getAllWork = async (req, res, next) => {
+  const { userId, token } = req;
+
+  let results;
+  try {
+    results = await Work.find({ userId });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+  res.json({ data: results, token });
+};
+
 module.exports.getWorkByInterval = async (req, res, next) => {
   const { userId, token } = req;
   const { start, end } = req.params;
