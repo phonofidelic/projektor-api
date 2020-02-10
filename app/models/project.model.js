@@ -7,6 +7,7 @@ const ProjectSchema = new Schema({
   // userId: { type: Schema.Types.ObjectId, required: true },
   userId: { type: String, required: true },
   title: { type: String, required: true },
+  color: { type: String },
   description: { type: String, default: 'No description provided' },
   startDate: { type: Date },
   deadline: { type: Date },
