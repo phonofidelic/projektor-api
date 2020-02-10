@@ -11,6 +11,7 @@ module.exports.createProject = async (req, res, next) => {
 
   const {
     title,
+    color,
     description,
     client,
     budgetedTime,
@@ -24,6 +25,7 @@ module.exports.createProject = async (req, res, next) => {
       userId,
       created: Date.now(),
       title,
+      color,
       description,
       client,
       budgetedTime,
