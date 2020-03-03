@@ -1,4 +1,6 @@
+const mongoose = require('mongoose');
 const Work = require('../models/work.model');
+const Project = require('../models/project.model');
 
 module.exports.createWork = async (req, res, next) => {
   const { userId, token } = req;
@@ -37,12 +39,40 @@ module.exports.updateWork = async (req, res, next) => {
         new: true
       }
     );
-    console.log('*** updatedWork:', updatedWork);
-    res.json({ data: updatedWork, token });
   } catch (err) {
     console.error(err);
     next(err);
   }
+
+  /**
+   * Use aggregate pipeline to get total timeUsed
+   * for Project
+   */
+  let projectDuration;
+  try {
+    projectDuration = await Work.aggregate([
+      { $match: { projectId: mongoose.Types.ObjectId(workData.projectId) } },
+      { $group: { _id: null, duration: { $sum: '$duration' } } },
+      { $project: { _id: 0, duration: 1 } }
+    ]);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+
+  /**
+   * Update Project with new timeUsed value
+   */
+  try {
+    await Project.findByIdAndUpdate(workData.projectId, {
+      timeUsed: projectDuration[0].duration
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+
+  res.json({ data: updatedWork, token });
 };
 
 module.exports.removeWork = async (req, res, next) => {
