@@ -4,13 +4,14 @@ const Project = require('../models/project.model');
 
 module.exports.createWork = async (req, res, next) => {
   const { userId, token } = req;
-  const { projectId, date, start, end, duration, notes } = req.body;
+  const { projectId, project, date, start, end, duration, notes } = req.body;
 
   let newWork;
   try {
     newWork = await new Work({
       userId,
       projectId,
+      project,
       date,
       start,
       end,
@@ -96,12 +97,36 @@ module.exports.getAllWork = async (req, res, next) => {
 
   let results;
   try {
-    results = await Work.find({ userId });
+    results = await Work.find({ userId }).populate('project');
   } catch (err) {
     console.error(err);
     next(err);
   }
-  res.json({ data: results, token });
+
+  /**
+   * Check Work documents for project field and
+   * update them if it is not present
+   */
+  const checkedResults = results.map(async work => {
+    if (!work.project) {
+      let updatedWork;
+      try {
+        updatedWork = await Work.findOneAndUpdate(
+          { userId, _id: work._id },
+          { project: work.projectId },
+          { new: true }
+        ).populate('project');
+      } catch (err) {
+        console.error(err);
+        next(err);
+      }
+      return updatedWork;
+    }
+
+    return work;
+  });
+
+  res.json({ data: await Promise.all(checkedResults), token });
 };
 
 module.exports.getWorkByInterval = async (req, res, next) => {

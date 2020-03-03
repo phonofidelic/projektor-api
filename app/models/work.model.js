@@ -6,6 +6,7 @@ const WorkSchema = new Schema({
   created: { type: Date, default: Date.now, required: true },
   userId: { type: Schema.Types.ObjectId, required: true },
   projectId: { type: Schema.Types.ObjectId, required: true },
+  project: { type: Schema.Types.ObjectId, required: true, ref: 'Project' },
   date: { type: Date, default: Date.now, required: true },
   start: { type: Date, default: Date.now, required: true },
   end: { type: Date },
