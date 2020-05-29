@@ -3,10 +3,12 @@ const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt-nodejs');
 
 const STRINGS = {
-  email_validation_msg: 'Please enter a valid email address'
+  email_validation_msg: 'Please enter a valid email address',
 };
 
-const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+// const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+/** Allow emails like "name.something+test1@gmail.com" */
+const emailRegex = /^\w+([\.-]?\w+)*(\+?\w+)@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 // Validation adapted from https://stackoverflow.com/questions/18022365/mongoose-validate-email-syntax/18022766#18022766
 const UserSchema = new Schema({
@@ -16,17 +18,17 @@ const UserSchema = new Schema({
     required: 'A valid email address is required',
     lowercase: true,
     unique: true,
-    validate: [email => emailRegex.test(email), STRINGS.email_validation_msg],
-    match: [emailRegex, STRINGS.email_validation_msg]
+    validate: [(email) => emailRegex.test(email), STRINGS.email_validation_msg],
+    match: [emailRegex, STRINGS.email_validation_msg],
   },
   password: { type: String, required: true },
   isVerified: { type: Boolean, default: false },
   passwordResetToken: String,
-  passwordResetExpires: Date
+  passwordResetExpires: Date,
 });
 
 // Encrypt password before saving to DB
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   let user = this;
   SALT_FACTOR = 5;
 
@@ -43,7 +45,7 @@ UserSchema.pre('save', function(next) {
   });
 });
 
-UserSchema.methods.comparePassword = function(candidatePassword, cb) {
+UserSchema.methods.comparePassword = function (candidatePassword, cb) {
   bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
     if (err) {
       console.error('comparePassword error:', err);
