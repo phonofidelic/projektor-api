@@ -7,6 +7,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth.routes');
 const projectRoutes = require('./routes/project.routes');
 const workRoutes = require('./routes/work.routes');
+const testdataRoutes = require('./routes/testdata.routes');
 const { DB_CONNECTION } = require('../config/keys');
 
 const app = express();
@@ -19,7 +20,7 @@ app.use(passport.initialize());
 // Configure db
 mongoose.connect(DB_CONNECTION, {
   useNewUrlParser: true,
-  useFindAndModify: false
+  useFindAndModify: false,
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'DB connection error'));
@@ -35,14 +36,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Configure access-control headers
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header(
-//     'Access-Control-Allow-Headers',
-//     'Origin, X-Requested-With, Content-Type, Accept'
-//   );
-//   next();
-// });
 app.use(cors());
 
 app.get('/', (req, res, next) => {
@@ -56,6 +49,8 @@ app.use(express.static('public'));
 app.use('/auth', authRoutes);
 app.use('/projects', projectRoutes);
 app.use('/work', workRoutes);
+
+process.env.NODE_ENV === 'development' && app.use('/testdata', testdataRoutes);
 
 // Catch all unhandled routes
 app.use('/*', (req, res) => {

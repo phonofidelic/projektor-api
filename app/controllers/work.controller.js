@@ -16,8 +16,10 @@ module.exports.createWork = async (req, res, next) => {
       start,
       end,
       duration,
-      notes
+      notes,
     }).save();
+
+    console.log('\n*** createWork, newWork:', newWork);
 
     res.json({ data: newWork, token });
   } catch (err) {
@@ -37,7 +39,7 @@ module.exports.updateWork = async (req, res, next) => {
       { _id: workId, userId },
       workData,
       {
-        new: true
+        new: true,
       }
     );
   } catch (err) {
@@ -54,7 +56,7 @@ module.exports.updateWork = async (req, res, next) => {
     projectDuration = await Work.aggregate([
       { $match: { projectId: mongoose.Types.ObjectId(workData.projectId) } },
       { $group: { _id: null, duration: { $sum: '$duration' } } },
-      { $project: { _id: 0, duration: 1 } }
+      { $project: { _id: 0, duration: 1 } },
     ]);
   } catch (err) {
     console.error(err);
@@ -66,7 +68,7 @@ module.exports.updateWork = async (req, res, next) => {
    */
   try {
     await Project.findByIdAndUpdate(workData.projectId, {
-      timeUsed: projectDuration[0].duration
+      timeUsed: projectDuration[0].duration,
     });
   } catch (err) {
     console.error(err);
@@ -107,7 +109,7 @@ module.exports.getAllWork = async (req, res, next) => {
    * Check Work documents for project field and
    * update them if it is not present
    */
-  const checkedResults = results.map(async work => {
+  const checkedResults = results.map(async (work) => {
     if (!work.project) {
       let updatedWork;
       try {
@@ -141,7 +143,7 @@ module.exports.getWorkByInterval = async (req, res, next) => {
 
   const querry = {
     userId,
-    start: { $gte: start, $lte: end }
+    start: { $gte: start, $lte: end },
   };
 
   let results;
