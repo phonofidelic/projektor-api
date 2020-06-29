@@ -4,10 +4,12 @@ const {
   updateWork,
   removeWork,
   getAllWork,
-  getWorkByInterval
+  getWorkByInterval,
+  searchWork,
 } = require('../controllers/work.controller');
 const requireAuth = require('../middlewares/requireAuth');
 
+router.get('/search', requireAuth, searchWork);
 router.post('/create', requireAuth, createWork);
 router.post('/update/:workId', requireAuth, updateWork);
 router.delete('/delete/:workId', requireAuth, removeWork);

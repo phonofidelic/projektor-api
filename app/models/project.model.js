@@ -15,7 +15,9 @@ const ProjectSchema = new Schema({
   budgetedTime: { type: Number },
   timeUsed: { type: Number, default: 0 },
   status: { type: String, default: ACTIVE },
-  work: [{ type: Schema.Types.ObjectId, ref: 'Work' }]
+  work: [{ type: Schema.Types.ObjectId, ref: 'Work' }],
 });
+
+ProjectSchema.index({ title: 'text', description: 'text', client: 'text' });
 
 module.exports = mongoose.model('Project', ProjectSchema);

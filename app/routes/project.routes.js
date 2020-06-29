@@ -6,11 +6,13 @@ const {
   editProject,
   deleteProject,
   setProjectStatus,
-  deleteAllTrash
+  deleteAllTrash,
+  searchProjects,
 } = require('../controllers/project.controller');
 const requireAuth = require('../middlewares/requireAuth');
 const requireVerification = require('../middlewares/requireVerification');
 
+router.get('/search', requireAuth, requireVerification, searchProjects);
 router.get('/', requireAuth, requireVerification, getProjects);
 router.post('/create', requireAuth, requireVerification, createProject);
 router.get('/:projectId', requireAuth, requireVerification, getProject);
