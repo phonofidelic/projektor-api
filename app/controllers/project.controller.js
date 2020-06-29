@@ -3,7 +3,7 @@ const {
   ACTIVE,
   COMPLETE,
   ARCHIVED,
-  DELETED
+  DELETED,
 } = require('../../constants').STATUS;
 
 module.exports.createProject = async (req, res, next) => {
@@ -16,7 +16,7 @@ module.exports.createProject = async (req, res, next) => {
     client,
     budgetedTime,
     startDate,
-    deadline
+    deadline,
   } = req.body;
 
   let newProject;
@@ -30,7 +30,7 @@ module.exports.createProject = async (req, res, next) => {
       client,
       budgetedTime,
       startDate,
-      deadline
+      deadline,
     }).save();
 
     res.status(200).json({ data: newProject, token });
@@ -65,7 +65,7 @@ module.exports.getProject = async (req, res, next) => {
   let project;
   try {
     project = await Project.findOne({ userId, _id: projectId }).populate({
-      path: 'work'
+      path: 'work',
     });
     res.json({ data: project, token });
   } catch (err) {
@@ -125,7 +125,7 @@ module.exports.deleteProject = async (req, res, next) => {
     deletedProject = await Project.findOneAndDelete({
       _id: projectId,
       userId,
-      status: DELETED
+      status: DELETED,
     });
 
     res.json({ data: deletedProject._id, token });
@@ -145,4 +145,32 @@ module.exports.deleteAllTrash = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
+};
+
+module.exports.searchProjects = async (req, res, next) => {
+  const { userId, token } = req;
+  const { q } = req.query;
+  console.log('\n### searchProjects, userId:', userId);
+
+  if (!q) {
+    let allProjects;
+    try {
+      allProjects = await Project.find({ userId });
+    } catch (err) {
+      return next(err);
+    }
+    console.log('empty search:', allProjects);
+    return res.status(200).json({ data: allProjects, token });
+  }
+
+  let matches;
+  try {
+    matches = await Project.find({ userId, $text: { $search: q } });
+  } catch (err) {
+    return next(err);
+  }
+
+  res.status(200).json({ data: matches, token });
+
+  // res.status(200).json({ data: [], token });
 };
