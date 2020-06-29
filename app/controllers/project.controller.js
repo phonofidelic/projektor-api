@@ -150,7 +150,7 @@ module.exports.deleteAllTrash = async (req, res, next) => {
 module.exports.searchProjects = async (req, res, next) => {
   const { userId, token } = req;
   const { q } = req.query;
-  console.log('\n### searchProjects, userId:', userId);
+  // console.log('\n### searchProjects, userId:', userId);
 
   if (!q) {
     let allProjects;
@@ -159,7 +159,6 @@ module.exports.searchProjects = async (req, res, next) => {
     } catch (err) {
       return next(err);
     }
-    console.log('empty search:', allProjects);
     return res.status(200).json({ data: allProjects, token });
   }
 
