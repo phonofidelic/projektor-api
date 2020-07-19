@@ -1,3 +1,6 @@
+const tm = require('text-miner');
+const WordPOS = require('wordpos');
+const pos = require('pos');
 const Project = require('../models/project.model');
 const {
   ACTIVE,
@@ -172,4 +175,63 @@ module.exports.searchProjects = async (req, res, next) => {
   res.status(200).json({ data: matches, token });
 
   // res.status(200).json({ data: [], token });
+};
+
+module.exports.findKeyTasks = async (req, res, next) => {
+  const { userId, token } = req;
+  const { projectId } = req.params;
+
+  console.log('*** findKeyTasks, projectId:', projectId);
+
+  let project;
+  try {
+    project = await Project.findOne({
+      // userId,
+      _id: projectId,
+    }).populate({ path: 'work' });
+  } catch (err) {
+    return next(err);
+  }
+
+  const corpus = new tm.Corpus([]);
+  const N_GRAM = 2;
+  const FREQ_TERM_COUNT_THRESHOLD = 1;
+
+  project.work.forEach((workItem) => {
+    corpus.addDoc(workItem.notes);
+  });
+
+  corpus
+    .trim()
+    .clean()
+    .removeInterpunctuation()
+    .removeWords([tm.STOPWORDS.EN, 'is', 'the', 'to'], true)
+    .removeDigits()
+    .removeInvalidCharacters()
+    .removeNewlines()
+    // .stem()
+    .toLower();
+
+  const isVerb = (word) => {
+    const posWords = new pos.Lexer().lex(word.replace("'", ''));
+    const tagger = new pos.Tagger();
+    const taggedWords = tagger.tag(posWords);
+    // console.log('*** taggedWords:', taggedWords);
+    return /VB/.test(taggedWords[0][1]);
+  };
+
+  const terms = new tm.DocumentTermMatrix(corpus, N_GRAM);
+  // console.log('*** findKeyTasks, vocabulary:', terms.vocabulary);
+
+  const keyTerms = terms
+    .weighting(tm.weightTfIdf)
+    .fill_zeros()
+    .findFreqTerms(FREQ_TERM_COUNT_THRESHOLD)
+    .filter((term) => isVerb(term.word))
+    .sort((a, b) => b.count - a.count)
+    .map((term) => ({ term: term.word, count: term.count }));
+
+  console.log('*** findKeyTasks, keyTerms:', keyTerms);
+
+  res.status(200).json({ message: 'Done!', token, data: keyTerms });
 };

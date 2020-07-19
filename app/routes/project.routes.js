@@ -8,6 +8,7 @@ const {
   setProjectStatus,
   deleteAllTrash,
   searchProjects,
+  findKeyTasks,
 } = require('../controllers/project.controller');
 const requireAuth = require('../middlewares/requireAuth');
 const requireVerification = require('../middlewares/requireVerification');
@@ -41,5 +42,7 @@ router.delete(
   requireVerification,
   deleteAllTrash
 );
+
+router.get('/keytasks/:projectId', findKeyTasks);
 
 module.exports = router;
