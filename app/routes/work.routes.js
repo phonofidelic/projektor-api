@@ -15,5 +15,4 @@ router.post('/update/:workId', requireAuth, updateWork);
 router.delete('/delete/:workId', requireAuth, removeWork);
 router.get('/', requireAuth, getAllWork);
 router.get('/interval/:start/:end', requireAuth, getWorkByInterval);
-
 module.exports = router;

@@ -50,7 +50,8 @@ router.post('/work', async (req, res, next) => {
         start,
         end,
         duration,
-        notes: faker.lorem.sentence(),
+        // notes: faker.lorem.sentence(),
+        notes: faker.hacker.phrase(),
       }).save();
     } catch (err) {
       console.error(err);
