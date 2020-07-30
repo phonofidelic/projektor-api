@@ -69,6 +69,7 @@ module.exports.getProject = async (req, res, next) => {
   try {
     project = await Project.findOne({ userId, _id: projectId }).populate({
       path: 'work',
+      options: { sort: { start: -1 } },
     });
     res.json({ data: project, token });
   } catch (err) {
