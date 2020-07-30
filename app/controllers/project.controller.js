@@ -193,12 +193,21 @@ module.exports.findKeyTasks = async (req, res, next) => {
     return next(err);
   }
 
+  if (project.work.length < 1) {
+    return res.status(200).json({
+      message: 'No work items found for this Project',
+      token,
+      data: [],
+    });
+  }
+
   const corpus = new tm.Corpus([]);
   const N_GRAM = 2;
   const FREQ_TERM_COUNT_THRESHOLD = 1;
 
   project.work.forEach((workItem) => {
-    corpus.addDoc(workItem.notes);
+    const notes = workItem.notes || '';
+    corpus.addDoc(notes);
   });
 
   corpus
