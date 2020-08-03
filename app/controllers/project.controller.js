@@ -114,7 +114,7 @@ module.exports.setProjectStatus = async (req, res, next) => {
       { new: true }
     );
 
-    res.json({ data: project._id, token });
+    res.json({ data: project, token });
   } catch (err) {
     return next(err);
   }
