@@ -8,10 +8,11 @@ const {
   logout,
   getUserInfo,
   verifyUser,
-  resendVerification
+  resendVerification,
 } = require('../controllers/auth.controller');
 const { sendTestEmail } = require('../services/mail.services');
 const requireAuth = require('../middlewares/requireAuth');
+const normalizeUserId = require('../middlewares/normalizeUserId');
 
 const requireLogin = passport.authenticate('local', { session: false });
 
@@ -20,7 +21,7 @@ router.post('/login', requireLogin, login);
 router.post('/logout', requireAuth, logout);
 router.get('/user', requireAuth, getUserInfo);
 router.get('/verify/:token', verifyUser);
-router.post('/resend', requireAuth, resendVerification);
+router.post('/resend', requireAuth, normalizeUserId, resendVerification);
 // router.post('/resend', userController.resendTokenPost);
 
 router.post('/testemail', async (req, res, next) => {

@@ -4,23 +4,25 @@ const Project = require('./project.model');
 
 const WorkSchema = new Schema({
   created: { type: Date, default: Date.now, required: true },
-  userId: { type: Schema.Types.ObjectId, required: true },
+  // userId: { type: Schema.Types.ObjectId, required: true },
+  userId: { type: String, required: true },
   projectId: { type: Schema.Types.ObjectId, required: true },
   project: { type: Schema.Types.ObjectId, required: true, ref: 'Project' },
   date: { type: Date, default: Date.now, required: true },
   start: { type: Date, default: Date.now, required: true },
   end: { type: Date },
   duration: { type: Number },
-  notes: { type: String }
+  notes: { type: String },
 });
 
-WorkSchema.pre('save', async function(next) {
+WorkSchema.pre('save', async function (next) {
+  console.log('### Work pre save');
   try {
     await Project.updateOne(
       { _id: this.projectId, userId: this.userId },
       {
         $inc: { timeUsed: this.duration },
-        $push: { work: this._id }
+        $push: { work: this._id },
       }
     );
     next();
@@ -29,14 +31,14 @@ WorkSchema.pre('save', async function(next) {
   }
 });
 
-WorkSchema.pre('remove', async function(next) {
+WorkSchema.pre('remove', async function (next) {
   console.log('*** PRE REMOVE');
   try {
     await Project.updateOne(
       { _id: this.projectId, userId: this.userId },
       {
         $inc: { timeUsed: -this.duration },
-        $pull: { work: this._id }
+        $pull: { work: this._id },
       }
     );
     next();

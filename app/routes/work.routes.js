@@ -8,11 +8,17 @@ const {
   searchWork,
 } = require('../controllers/work.controller');
 const requireAuth = require('../middlewares/requireAuth');
+const normalizeUserId = require('../middlewares/normalizeUserId');
 
-router.get('/search', requireAuth, searchWork);
-router.post('/create', requireAuth, createWork);
-router.post('/update/:workId', requireAuth, updateWork);
-router.delete('/delete/:workId', requireAuth, removeWork);
-router.get('/', requireAuth, getAllWork);
-router.get('/interval/:start/:end', requireAuth, getWorkByInterval);
+router.get('/search', requireAuth, normalizeUserId, searchWork);
+router.post('/create', requireAuth, normalizeUserId, createWork);
+router.put('/update/:workId', requireAuth, normalizeUserId, updateWork);
+router.delete('/delete/:workId', requireAuth, normalizeUserId, removeWork);
+router.get('/', requireAuth, normalizeUserId, getAllWork);
+router.get(
+  '/interval/:start/:end',
+  requireAuth,
+  normalizeUserId,
+  getWorkByInterval
+);
 module.exports = router;
