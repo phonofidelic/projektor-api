@@ -1,0 +1,32 @@
+[
+    {
+        "isVerified": true,
+        "_id": "5e12675d2ff80e0017cacf88",
+        "email": "chris.clemons85@gmail.com",
+        "password": "$2a$05$RoQcWTQkts0pSMXIt80nRODkP/7F4GfvOZHr3ZJbPqnKhAs9dLxhy",
+        "created": "2020-01-05T22:46:53.786Z",
+        "__v": 0,
+        "email_verified": true,
+        "created_at": "2020-01-05T22:46:53.786Z"
+    },
+    {
+        "isVerified": true,
+        "_id": "5ef77144be035300178892cc",
+        "email": "chris.clemons85+1@gmail.com",
+        "password": "$2a$05$dl0v255UuePCLAyJWzguBeZYYg6Q3l/lOeYSkwsFrTrzjVEgFCXBO",
+        "created": "2020-06-27T16:18:12.449Z",
+        "__v": 0,
+        "email_verified": true,
+        "created_at": "2020-06-27T16:18:12.449Z"
+    },
+    {
+        "isVerified": true,
+        "_id": "5f1fbe7c69470e001762b62e",
+        "email": "anna.oblivian@gmail.com",
+        "password": "$2a$05$Br/u6LgEmMQbCNyHzzs3e.Ivow7YtPJhZV9D8ZkzP1B74U/QRdjXW",
+        "created": "2020-07-28T05:58:20.435Z",
+        "__v": 0,
+        "email_verified": true,
+        "created_at": "2020-07-28T05:58:20.435Z"
+    }
+]

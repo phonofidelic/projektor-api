@@ -8,5 +8,10 @@ module.exports = {
   SES_KEY: process.env.SES_KEY,
   SES_SECRET: process.env.SES_SECRET,
   DOMAIN: 'http://localhost:4000',
-  CLIENT_DOMAIN: 'http://localhost:3000'
+  CLIENT_DOMAIN: 'http://localhost:3000',
+  APP_NAMESPACE: process.env.APP_NAMESPACE,
+  AUTH0_API_IDENTIFIER: process.env.AUTH0_API_IDENTIFIER,
+  AUTH0_DOMAIN: process.env.AUTH0_DOMAIN,
+  AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
+  AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
 };

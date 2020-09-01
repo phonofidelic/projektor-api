@@ -1,0 +1,24 @@
+[{
+	"_id": {
+		"$oid": "5deae2fc0538f147d0eace3c"
+	},
+	"email": "test1@test.com",
+	"password": "$2a$05$mfn4/Evjp..R0qLzmBsxXeAOtNTGSJlO6eg3N71xYlbnrPaxWVpGa",
+	"created": {
+		"$date": "2019-12-06T23:23:40.068Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e1e35db3232b241eef5a408"
+	},
+	"isVerified": true,
+	"email": "chris.clemons85@gmail.com",
+	"password": "$2a$05$4VIS.IYjezogpgVvRpVM/urcIKpYyJSmvQ2.15Btm37ZVkv7osNZ6",
+	"created": {
+		"$date": "2020-01-14T21:42:51.317Z"
+	},
+	"__v": 0
+}]
+
