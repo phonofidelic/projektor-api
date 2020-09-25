@@ -6,6 +6,7 @@ const {
   getAllWork,
   getWorkByInterval,
   searchWork,
+  analyzeWorkNotes,
 } = require('../controllers/work.controller');
 const requireAuth = require('../middlewares/requireAuth');
 const normalizeUserId = require('../middlewares/normalizeUserId');
@@ -21,4 +22,5 @@ router.get(
   normalizeUserId,
   getWorkByInterval
 );
+router.post('/analyze', requireAuth, normalizeUserId, analyzeWorkNotes);
 module.exports = router;

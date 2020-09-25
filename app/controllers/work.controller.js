@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const tm = require('text-miner');
+const pos = require('pos');
+
 const Work = require('../models/work.model');
 const Project = require('../models/project.model');
 
@@ -181,4 +184,82 @@ module.exports.searchWork = async (req, res, next) => {
   }
 
   res.status(200).json({ data: matches, token });
+};
+
+const isVerb = (word) => {
+  const posWords = new pos.Lexer().lex(word.replace("'", ''));
+  const tagger = new pos.Tagger();
+  const taggedWords = tagger.tag(posWords);
+  // console.log('*** taggedWords:', taggedWords);
+  return /VB/.test(taggedWords[0][1]);
+};
+
+const generateNoteDoc = (word, n) => {
+  let doc = word;
+
+  for (let i = 0; i < n; i++) {
+    doc += ' ' + word;
+  }
+
+  return doc;
+};
+module.exports.analyzeWorkNotes = async (req, res, next) => {
+  const { userId } = req;
+  const { notes } = req.body;
+
+  console.log('*** notes:', notes);
+  // console.log('*** userId:', userId);
+
+  if (notes.split(' ').length < 3) {
+    return res.status(200).json({ message: 'done!', keyTerms: [] });
+  }
+  const corpus = new tm.Corpus([]);
+  const N_GRAM = 2;
+  const FREQ_TERM_COUNT_THRESHOLD = 1;
+
+  corpus.addDoc(generateNoteDoc('bajs', 20));
+  corpus.addDoc(generateNoteDoc('bajs', 20));
+  corpus.addDoc(generateNoteDoc('bajs', 20));
+  corpus.addDoc(generateNoteDoc('bajs', 20));
+  corpus.addDoc(notes);
+  corpus.addDoc(notes);
+  // corpus.addDoc(notes);
+  // corpus.addDoc(
+  //   'This method can be used to prevent extra renders when a react component rapidly receives new props by delaying the triggering of the render until updates become less frequent. Doing so will improve the overall rendering time of the application, thus improving the user experience. It uses lodash debounce under the hood. Reach out to learn more about the web development NYC experts for the various ways to improve or build the quality of projects and across your company '
+  // );
+  // corpus.addDoc(
+  //   'We can pass a corpus to the constructor DocumentTermMatrix in order to create a document-term-matrix or a term-document matrix. Objects derived from either share the same methods, but differ in how the underlying matrix is represented: A DocumentTermMatrix has documents on its rows and columns corresponding to words, whereas a TermDocumentMatrix has rows corresponding to words and columns to documents.'
+  // );
+  // corpus.addDoc(
+  //   "Form validation errors. Should match the shape of your form's values defined in initialValues. If you are using validationSchema (which you should be), keys and shape will match your schema exactly. Internally, Formik transforms raw Yup validation errors on your behalf. If you are using validate, then that function will determine the errors objects shape."
+  // );
+  // corpus.addDoc(
+  //   'You would have to declare several state or use array, you would have to offer the name of the field in the call to onChange. Always change the state at the right time, remember that the changes give rise to a new render.'
+  // );
+
+  corpus
+    .trim()
+    .clean()
+    .removeInterpunctuation()
+    .removeWords([tm.STOPWORDS.EN, 'is', 'the', 'to'], true)
+    .removeDigits()
+    .removeInvalidCharacters()
+    .removeNewlines()
+    // .stem()
+    .toLower();
+
+  const terms = new tm.DocumentTermMatrix(corpus, N_GRAM);
+
+  const keyTerms = terms
+    .weighting(tm.weightTfIdf)
+    .fill_zeros()
+    .findFreqTerms(FREQ_TERM_COUNT_THRESHOLD)
+    .filter((term) => isVerb(term.word))
+    .sort((a, b) => b.count - a.count)
+    .map((term) => ({ term: term.word, count: term.count }));
+
+  console.log('*** analyzeWorkNotes, corpus:', corpus);
+  console.log('*** analyzeWorkNotes, keyTerms:', keyTerms);
+
+  res.status(200).json({ message: 'done!', keyTerms });
 };
