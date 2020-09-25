@@ -190,8 +190,8 @@ const isVerb = (word) => {
   const posWords = new pos.Lexer().lex(word.replace("'", ''));
   const tagger = new pos.Tagger();
   const taggedWords = tagger.tag(posWords);
-  // console.log('*** taggedWords:', taggedWords);
-  return /VB/.test(taggedWords[0][1]);
+  console.log('*** taggedWords:', taggedWords);
+  return taggedWords.length ? /VB/.test(taggedWords[0][1]) : false;
 };
 
 const generateNoteDoc = (word, n) => {
