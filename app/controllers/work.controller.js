@@ -4,10 +4,20 @@ const pos = require('pos');
 
 const Work = require('../models/work.model');
 const Project = require('../models/project.model');
+const Task = require('../models/task.model');
 
 module.exports.createWork = async (req, res, next) => {
   const { userId, token } = req;
-  const { projectId, project, date, start, end, duration, notes } = req.body;
+  const {
+    projectId,
+    project,
+    date,
+    start,
+    end,
+    duration,
+    notes,
+    tasks,
+  } = req.body;
 
   let newWork;
   try {
@@ -22,13 +32,38 @@ module.exports.createWork = async (req, res, next) => {
       notes,
     }).save();
 
-    console.log('\n*** createWork, newWork:', newWork);
-
-    res.json({ data: newWork, token });
+    // console.log('\n*** createWork, newWork:', newWork);
   } catch (err) {
     console.error(err);
-    next(err);
+    return next(err);
   }
+
+  /**
+   * Save new Task data
+   */
+  let newTasks;
+  try {
+    newTasks = await Promise.all(
+      tasks.map(
+        async (task) =>
+          await new Task({
+            userId,
+            work: [newWork._id],
+            projects: [newWork.project],
+            displayName: task.displayName,
+            value: task.value,
+            description: task.description,
+          }).save()
+      )
+    );
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+
+  console.log('*** newTasks:', newTasks);
+
+  res.json({ data: newWork, token });
 };
 
 module.exports.updateWork = async (req, res, next) => {
@@ -36,11 +71,38 @@ module.exports.updateWork = async (req, res, next) => {
   const { workData } = req.body;
   const { workId } = req.params;
 
+  console.log('\n*** workData:', workData);
+
+  /**
+   * Save new Task data
+   */
+  let newTasks;
+  try {
+    newTasks = await Promise.all(
+      workData.tasks.map((task) =>
+        new Task({
+          userId,
+          work: [workData._id],
+          projects: [workData.project],
+          displayName: task.displayName,
+          value: task.value,
+          description: task.description,
+        }).save()
+      )
+    );
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+
+  /**
+   * Update Work document
+   */
   let updatedWork;
   try {
     updatedWork = await Work.findOneAndUpdate(
       { _id: workId, userId },
-      workData,
+      { ...workData, tasks: newTasks.map((task) => task._id) },
       {
         new: true,
       }
