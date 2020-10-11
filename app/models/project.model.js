@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Work = require('../models/work.model');
+const Task = require('../models/task.model');
 const { ACTIVE } = require('../../constants').STATUS;
 
 const ProjectSchema = new Schema(
@@ -22,21 +24,40 @@ const ProjectSchema = new Schema(
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
 );
 
-ProjectSchema.pre('remove', async function (next) {
-  const project = this;
-  try {
-    await project
-      .model('Task')
-      .updateMany(
-        { projects: { $in: project._id } },
-        { $pull: { projects: work._id } }
-      );
-  } catch (err) {
-    next(err);
-  }
+// ProjectSchema.pre('findOneAndDelete', async function (next) {
+//   const project = this;
+//   console.log('*** PRE REMOVE project:', project);
+//   console.log('*** project.userId:', project.userId);
+//   console.log('*** project._id:', project._id);
 
-  next();
-});
+//   /**
+//    * Delete all Work items in this Project.
+//    */
+//   try {
+//     // await project.model('Work').deleteMany({
+//     await Work.deleteMany({
+//       userId: project.userId,
+//       project: project._id,
+//     });
+//   } catch (err) {
+//     return next(err);
+//   }
+
+//   /**
+//    * Remove reference to this Project from all Tasks.
+//    */
+//   try {
+//     // await project.model('Task')
+//     await Task.updateMany(
+//       { userId: project.userId, projects: { $in: project._id } },
+//       { $pull: { projects: project._id } }
+//     );
+//   } catch (err) {
+//     next(err);
+//   }
+
+//   return next();
+// });
 
 ProjectSchema.index({ title: 'text', description: 'text', client: 'text' });
 

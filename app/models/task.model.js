@@ -7,7 +7,7 @@ const TaskSchema = new Schema(
     work: [{ type: Schema.Types.ObjectId, ref: 'Work' }],
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
     displayName: { type: String, required: true },
-    value: { type: String, required: true },
+    value: { type: String, required: true, unique: true },
     description: { type: String },
   },
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
@@ -25,7 +25,7 @@ TaskSchema.pre('save', async function (next) {
         userId: task.userId,
         _id: { $in: task.projects },
       },
-      { $push: { tasks: task._id } }
+      { $addToSet: { tasks: task._id } }
     );
     // .save();
   } catch (err) {
@@ -41,7 +41,7 @@ TaskSchema.pre('save', async function (next) {
         userId: task.userId,
         _id: { $in: task.work },
       },
-      { $push: { tasks: task._id } }
+      { $addToSet: { tasks: task._id } }
     );
     // .save();
   } catch (err) {
@@ -50,6 +50,39 @@ TaskSchema.pre('save', async function (next) {
 
   next();
 });
+
+// TaskSchema.pre('updateOne', async function (next) {
+//   const task = this.getUpdate();
+//   console.log('### Task updateOne, task:', task);
+
+//   try {
+//     await task.model('Work').updateOne(
+//       {
+//         userId: task.userId,
+//         _id: { $in: task.work },
+//       },
+//       { $push: { tasks: task._id } }
+//     );
+//   } catch (err) {
+//     console.error(err);
+//     next(err);
+//   }
+
+//   try {
+//     await task.model('Work').updateOne(
+//       {
+//         userId: task.userId,
+//         _id: { $nin: task.work },
+//       },
+//       { $pull: { tasks: task._id } }
+//     );
+//   } catch (err) {
+//     console.error(err);
+//     next(err);
+//   }
+
+//   next();
+// });
 
 TaskSchema.pre('remove', async function (next) {
   const task = this;

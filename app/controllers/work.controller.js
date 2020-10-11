@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 const tm = require('text-miner');
 const pos = require('pos');
+const { map } = require('p-iteration');
 
 const Work = require('../models/work.model');
 const Project = require('../models/project.model');
 const Task = require('../models/task.model');
 
 module.exports.createWork = async (req, res, next) => {
-  const { userId, token } = req;
+  const { userId } = req;
   const {
     projectId,
     project,
@@ -18,6 +19,8 @@ module.exports.createWork = async (req, res, next) => {
     notes,
     tasks,
   } = req.body;
+
+  console.log('\n*** Create new Work ***');
 
   let newWork;
   try {
@@ -39,59 +42,198 @@ module.exports.createWork = async (req, res, next) => {
   }
 
   /**
-   * Save new Task data
+   * Find all Tasks associated with the Work documents Project.
    */
-  let newTasks;
+  const addedTasks = await map(tasks, async (task) => {
+    let foundTask;
+    try {
+      foundTask = await Task.findOne({
+        userId,
+        projects: { $in: task.projects },
+        value: task.value,
+      });
+    } catch (err) {
+      console.error('Could not find task:', err);
+      return next(err);
+    }
+
+    /**
+     * If an existing Task is found, add this Work id
+     * to its reference array and return the Task id.
+     */
+    console.log('* Existing Task found, updating reference links');
+    if (foundTask) {
+      try {
+        await Task.updateOne(
+          { userId, _id: foundTask._id },
+          { $addToSet: { work: newWork._id } }
+        );
+      } catch (err) {
+        console.error('Could not add Work id to the Tasks:', err);
+        return next(err);
+      }
+      return foundTask._id;
+    }
+
+    /**
+     * Otherwise, create a new Task and add this Work id
+     * to its reference array and return the Task id.
+     */
+    console.log('* No existing Task found, creating new Task...');
+    let newTask;
+    try {
+      newTask = await new Task({
+        userId,
+        work: [newWork._id],
+        projects: [newWork.project],
+        displayName: task.displayName,
+        value: task.value,
+        description: task.description,
+      }).save();
+    } catch (err) {
+      console.error('Could not create new task', err);
+      return next(err);
+    }
+
+    /**
+     * Update project with new Task id
+     */
+    try {
+      await Project.findByIdAndUpdate(
+        {
+          userId,
+          _id: newWork.project,
+        },
+        {
+          $addToSet: { tasks: newTask._id },
+        }
+      );
+    } catch (err) {
+      console.error('Could not update project with new task id');
+      return next(err);
+    }
+
+    return newTask._id;
+  });
+
+  /**
+   * Update the new Work doc with the added Tasks.
+   */
+  let newWorkWithTasks;
   try {
-    newTasks = await Promise.all(
-      tasks.map(
-        async (task) =>
-          await new Task({
-            userId,
-            work: [newWork._id],
-            projects: [newWork.project],
-            displayName: task.displayName,
-            value: task.value,
-            description: task.description,
-          }).save()
-      )
-    );
+    newWorkWithTasks = await Work.findOneAndUpdate(
+      { userId, _id: newWork._id },
+      { $set: { tasks: addedTasks } },
+      { new: true }
+    ).populate('tasks');
   } catch (err) {
-    console.error(err);
+    console.error('Could not update new Work doc with Task references:', err);
     return next(err);
   }
+  console.log('### newWorkWithTasks:', newWorkWithTasks);
 
-  console.log('*** newTasks:', newTasks);
-
-  res.json({ data: newWork, token });
+  res.json({ data: newWorkWithTasks });
 };
 
 module.exports.updateWork = async (req, res, next) => {
-  const { userId, token } = req;
+  const { userId } = req;
   const { workData } = req.body;
-  const { workId } = req.params;
 
-  console.log('\n*** workData:', workData);
+  console.log('\n*** Update Work ***');
 
   /**
-   * Save new Task data
+   * Find all Tasks associated with the Work documents Project.
    */
-  let newTasks;
-  try {
-    newTasks = await Promise.all(
-      workData.tasks.map((task) =>
-        new Task({
+  const tasks = await map(workData.tasks, async (task) => {
+    let foundTask;
+    try {
+      foundTask = await Task.findOne({
+        userId,
+        projects: { $in: task.projects },
+        value: task.value,
+      });
+    } catch (err) {
+      console.error('Could not find task:', err);
+      return next(err);
+    }
+
+    /**
+     * If an existing Task is found, add this Work id
+     * to its reference array and return the Task id.
+     */
+    if (foundTask) {
+      console.log('* Existing Task found, updating reference links');
+      try {
+        await Task.updateOne(
+          { userId, _id: foundTask._id },
+          { $addToSet: { work: workData._id } }
+        );
+      } catch (err) {
+        console.error('Could not add Work id to the Tasks:', err);
+        return next(err);
+      }
+      return foundTask._id;
+    }
+
+    /**
+     * Otherwise, create a new Task and add this Work id
+     * to its reference array and return the Task id.
+     */
+    console.log('* No existing Task found, creating new Task...');
+    let newTask;
+    try {
+      newTask = await new Task({
+        userId,
+        work: [workData._id],
+        projects: [workData.project],
+        displayName: task.displayName,
+        value: task.value,
+        description: task.description,
+      }).save();
+    } catch (err) {
+      console.error('Could not create new task', err);
+      return next(err);
+    }
+
+    /**
+     * Update project with new Task id
+     */
+    try {
+      await Project.findByIdAndUpdate(
+        {
           userId,
-          work: [workData._id],
-          projects: [workData.project],
-          displayName: task.displayName,
-          value: task.value,
-          description: task.description,
-        }).save()
-      )
+          _id: workData.project,
+        },
+        {
+          $addToSet: { tasks: newTask._id },
+        }
+      );
+    } catch (err) {
+      console.error('Could not update project with new task id');
+      return next(err);
+    }
+
+    return newTask._id;
+  });
+
+  /**
+   * Update all Tasks associated with this Work item.
+   * For each Task found, if it is not in the "tasks" list,
+   * pull this Work reference from the Task document.
+   */
+  try {
+    await Task.updateMany(
+      {
+        userId,
+        // work: { $in: [workData._id] },
+        _id: {
+          $nin: tasks,
+        },
+      },
+      { $pull: { work: workData._id } }
     );
   } catch (err) {
-    console.error(err);
+    console.error('Could not unlink referenced Task:', err);
     return next(err);
   }
 
@@ -101,12 +243,15 @@ module.exports.updateWork = async (req, res, next) => {
   let updatedWork;
   try {
     updatedWork = await Work.findOneAndUpdate(
-      { _id: workId, userId },
-      { ...workData, tasks: newTasks.map((task) => task._id) },
+      { _id: workData._id, userId },
+      {
+        ...workData,
+        tasks,
+      },
       {
         new: true,
       }
-    );
+    ).populate('tasks');
   } catch (err) {
     console.error(err);
     next(err);
@@ -140,7 +285,7 @@ module.exports.updateWork = async (req, res, next) => {
     next(err);
   }
 
-  res.json({ data: updatedWork, token });
+  res.json({ data: updatedWork });
 };
 
 module.exports.removeWork = async (req, res, next) => {
@@ -267,7 +412,11 @@ const generateNoteDoc = (word, n) => {
 };
 module.exports.analyzeWorkNotes = async (req, res, next) => {
   const { userId } = req;
-  const { notes } = req.body;
+  const { notes, projectId } = req.body;
+
+  if (!notes) {
+    return res.status(200).json({ message: 'done!', keyTerms: [] });
+  }
 
   console.log('*** notes:', notes);
   // console.log('*** userId:', userId);
@@ -285,19 +434,6 @@ module.exports.analyzeWorkNotes = async (req, res, next) => {
   corpus.addDoc(generateNoteDoc('bajs', 20));
   corpus.addDoc(notes);
   corpus.addDoc(notes);
-  // corpus.addDoc(notes);
-  // corpus.addDoc(
-  //   'This method can be used to prevent extra renders when a react component rapidly receives new props by delaying the triggering of the render until updates become less frequent. Doing so will improve the overall rendering time of the application, thus improving the user experience. It uses lodash debounce under the hood. Reach out to learn more about the web development NYC experts for the various ways to improve or build the quality of projects and across your company '
-  // );
-  // corpus.addDoc(
-  //   'We can pass a corpus to the constructor DocumentTermMatrix in order to create a document-term-matrix or a term-document matrix. Objects derived from either share the same methods, but differ in how the underlying matrix is represented: A DocumentTermMatrix has documents on its rows and columns corresponding to words, whereas a TermDocumentMatrix has rows corresponding to words and columns to documents.'
-  // );
-  // corpus.addDoc(
-  //   "Form validation errors. Should match the shape of your form's values defined in initialValues. If you are using validationSchema (which you should be), keys and shape will match your schema exactly. Internally, Formik transforms raw Yup validation errors on your behalf. If you are using validate, then that function will determine the errors objects shape."
-  // );
-  // corpus.addDoc(
-  //   'You would have to declare several state or use array, you would have to offer the name of the field in the call to onChange. Always change the state at the right time, remember that the changes give rise to a new render.'
-  // );
 
   corpus
     .trim()
@@ -318,10 +454,31 @@ module.exports.analyzeWorkNotes = async (req, res, next) => {
     .findFreqTerms(FREQ_TERM_COUNT_THRESHOLD)
     .filter((term) => isVerb(term.word))
     .sort((a, b) => b.count - a.count)
-    .map((term) => ({ term: term.word, count: term.count }));
+    .map((term) => ({
+      value: term.word,
+      displayName: term.word,
+      count: term.count,
+    }));
 
-  console.log('*** analyzeWorkNotes, corpus:', corpus);
+  // console.log('*** analyzeWorkNotes, corpus:', corpus);
   console.log('*** analyzeWorkNotes, keyTerms:', keyTerms);
 
-  res.status(200).json({ message: 'done!', keyTerms });
+  const suggestedTasks = await map(keyTerms, async (term) => {
+    let foundTask;
+    try {
+      foundTask = await Task.findOne({
+        userId,
+        projects: { $in: projectId },
+        value: term.value,
+      });
+    } catch (err) {
+      console.error('Could not find task:', err);
+      return next(err);
+    }
+
+    if (foundTask) return foundTask;
+    return term;
+  });
+
+  res.status(200).json({ message: 'done!', suggestedTasks });
 };

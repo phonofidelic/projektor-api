@@ -30,6 +30,7 @@
     "mongoose": "^5.7.13",
     "node-nlp": "^4.8.0",
     "node-ses": "^2.2.1",
+    "p-iteration": "^1.1.8",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",

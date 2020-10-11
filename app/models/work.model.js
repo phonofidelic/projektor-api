@@ -19,7 +19,7 @@ const WorkSchema = new Schema(
 );
 
 WorkSchema.pre('save', async function (next) {
-  console.log('### Work pre save');
+  console.log('### PRE SAVE Work');
   const work = this;
   try {
     await work.model('Project').updateOne(
@@ -37,7 +37,7 @@ WorkSchema.pre('save', async function (next) {
 });
 
 WorkSchema.pre('remove', async function (next) {
-  console.log('*** PRE REMOVE');
+  console.log('*** PRE REMOVE Work');
   const work = this;
   try {
     await work.model('Project').updateOne(
@@ -56,7 +56,10 @@ WorkSchema.pre('remove', async function (next) {
   try {
     await work
       .model('Task')
-      .updateMany({ work: { $in: work._id } }, { $pull: { work: work._id } });
+      .updateMany(
+        { userId: work.userId, work: { $in: work._id } },
+        { $pull: { work: work._id } }
+      );
   } catch (err) {
     return next(err);
   }
