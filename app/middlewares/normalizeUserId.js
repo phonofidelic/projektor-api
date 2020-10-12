@@ -8,7 +8,7 @@ module.exports = async (req, res, next) => {
    * continue to next function.
    */
   const { userId } = req;
-  console.log('### normalizeUserId, userId:', userId);
+  // console.log('### normalizeUserId, userId:', userId);
   if (userId) return next();
 
   /**
@@ -16,7 +16,7 @@ module.exports = async (req, res, next) => {
    * and set it as req.userId.
    */
   const user = req.user;
-  console.log('### normalizeUserId, user:', user);
+  // console.log('### normalizeUserId, user:', user);
   const { sub } = user;
 
   req.userId = sub;

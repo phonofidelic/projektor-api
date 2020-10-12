@@ -2,6 +2,8 @@ const tm = require('text-miner');
 const WordPOS = require('wordpos');
 const pos = require('pos');
 const Project = require('../models/project.model');
+const Work = require('../models/work.model');
+const { nextTick } = require('wordpos/src/util');
 const {
   ACTIVE,
   COMPLETE,
@@ -70,6 +72,10 @@ module.exports.getProject = async (req, res, next) => {
     project = await Project.findOne({ userId, _id: projectId }).populate({
       path: 'work',
       options: { sort: { start: -1 } },
+      populate: {
+        path: 'tasks',
+        model: 'Task',
+      },
     });
     res.json({ data: project, token });
   } catch (err) {
@@ -131,11 +137,48 @@ module.exports.deleteProject = async (req, res, next) => {
       userId,
       status: DELETED,
     });
-
-    res.json({ data: deletedProject._id, token });
   } catch (err) {
     return next(err);
   }
+
+  /**
+   * Delete all Work items in this Project.
+   *
+   * Note:
+   * Need to use findOneAndDelete on each work reference.
+   * This returns the doc so that remove can be called on it
+   * which triggers the pre remove middleware.
+   */
+  for await (let work of deletedProject.work) {
+    let deletedWork;
+    try {
+      deletedWork = await deletedProject.model('Work').findOneAndDelete({
+        userId,
+        _id: work,
+      });
+    } catch (err) {
+      return next(err);
+    }
+    /** Trigger pre remove middleware */
+    deletedWork.remove();
+  }
+
+  /**
+   * Remove reference to this Project from all Tasks.
+   */
+  try {
+    await deletedProject.model('Task').updateMany(
+      {
+        userId: deletedProject.userId,
+        projects: { $in: deletedProject._id },
+      },
+      { $pull: { projects: deletedProject._id } }
+    );
+  } catch (err) {
+    next(err);
+  }
+
+  res.json({ data: deletedProject._id, token });
 };
 
 module.exports.deleteAllTrash = async (req, res, next) => {
@@ -189,7 +232,13 @@ module.exports.findKeyTasks = async (req, res, next) => {
     project = await Project.findOne({
       // userId,
       _id: projectId,
-    }).populate({ path: 'work' });
+    }).populate({
+      path: 'work',
+      populate: {
+        path: 'tasks',
+        model: 'Task',
+      },
+    });
   } catch (err) {
     return next(err);
   }

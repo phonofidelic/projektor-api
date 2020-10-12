@@ -7,6 +7,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth.routes');
 const projectRoutes = require('./routes/project.routes');
 const workRoutes = require('./routes/work.routes');
+const taskRoutes = require('./routes/task.routes');
 const testdataRoutes = require('./routes/testdata.routes');
 const { DB_CONNECTION } = require('../config/keys');
 
@@ -51,6 +52,7 @@ app.use(express.static('public'));
 app.use('/auth', authRoutes);
 app.use('/projects', projectRoutes);
 app.use('/work', workRoutes);
+app.use('/tasks', taskRoutes);
 
 process.env.NODE_ENV === 'development' && app.use('/testdata', testdataRoutes);
 
