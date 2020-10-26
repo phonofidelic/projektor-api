@@ -452,7 +452,8 @@ module.exports.analyzeWorkNotes = async (req, res, next) => {
     .weighting(tm.weightTfIdf)
     .fill_zeros()
     .findFreqTerms(FREQ_TERM_COUNT_THRESHOLD)
-    .filter((term) => isVerb(term.word))
+    // .filter((term) => isVerb(term.word))
+    .filter((term) => term.word !== 'bajs bajs')
     .sort((a, b) => b.count - a.count)
     .map((term) => ({
       value: term.word,
