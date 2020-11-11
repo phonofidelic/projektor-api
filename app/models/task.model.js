@@ -7,7 +7,7 @@ const TaskSchema = new Schema(
     work: [{ type: Schema.Types.ObjectId, ref: 'Work' }],
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
     displayName: { type: String, required: true },
-    value: { type: String, required: true, unique: true },
+    value: { type: String, required: true },
     description: { type: String },
   },
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
