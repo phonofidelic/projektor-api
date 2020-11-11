@@ -14,6 +14,13 @@ const WorkSchema = new Schema(
     duration: { type: Number },
     notes: { type: String },
     tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
+    // taskAloc: [
+    //   {
+    //     task: { type: Schema.Types.ObjectId, ref: 'Task' },
+    //     alocation: { type: Schema.Types.Number, default: 1 },
+    //   },
+    // ],
+    taskAlloc: [{}],
   },
   { timestamps: { createdAt: 'created', updatedAt: 'updated' } }
 );
