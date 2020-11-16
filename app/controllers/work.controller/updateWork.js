@@ -10,6 +10,8 @@ const updateWork = async (req, res, next) => {
   const { workData } = req.body;
 
   console.log('\n*** Update Work ***');
+  console.log('* work data:');
+  console.log(workData);
 
   /**
    * Find all Tasks associated with the Work documents Project.
@@ -117,6 +119,10 @@ const updateWork = async (req, res, next) => {
       {
         ...workData,
         tasks,
+        taskAlloc: workData.taskAlloc.map((alloc, i) => ({
+          ...alloc,
+          task: tasks[i]._id,
+        })),
       },
       {
         new: true,
