@@ -75,7 +75,7 @@ const analyzeWorkNotes = async (req, res, next) => {
     }));
 
   // console.log('*** analyzeWorkNotes, corpus:', corpus);
-  console.log('*** analyzeWorkNotes, keyTerms:', keyTerms);
+  // console.log('*** analyzeWorkNotes, keyTerms:', keyTerms);
 
   const suggestedTasks = await map(keyTerms, async (term) => {
     let foundTask;

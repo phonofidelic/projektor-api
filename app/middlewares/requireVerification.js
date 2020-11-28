@@ -24,7 +24,7 @@ const { APP_NAMESPACE } = require('../../config/keys');
 module.exports = async (req, res, next) => {
   const user = req.user;
 
-  console.log('### requireVerification, user:', user);
+  // console.log('### requireVerification, user:', user);
 
   if (!user[`${APP_NAMESPACE}/isVerified`])
     return res

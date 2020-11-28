@@ -1,4 +1,5 @@
 module.exports = {
+  startWork: require('./startWork'),
   createWork: require('./createWork'),
   updateWork: require('./updateWork'),
   removeWork: require('./removeWork'),
