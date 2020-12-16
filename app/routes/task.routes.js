@@ -2,7 +2,10 @@ const router = require('express').Router();
 const requireAuth = require('../middlewares/requireAuth');
 const normalizeUserId = require('../middlewares/normalizeUserId');
 const requireVerification = require('../middlewares/requireVerification');
-const { getTasksByProjectId } = require('../controllers/task.controller');
+const {
+  getTasksByProjectId,
+  createTask,
+} = require('../controllers/task.controller');
 
 /**
  * Get tasks by projectId
@@ -14,5 +17,7 @@ router.get(
   normalizeUserId,
   getTasksByProjectId
 );
+
+router.post('/', requireAuth, requireVerification, normalizeUserId, createTask);
 
 module.exports = router;

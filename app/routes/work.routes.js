@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const {
+  startWork,
   createWork,
   updateWork,
   removeWork,
@@ -12,15 +13,24 @@ const requireAuth = require('../middlewares/requireAuth');
 const normalizeUserId = require('../middlewares/normalizeUserId');
 
 router.get('/search', requireAuth, normalizeUserId, searchWork);
+
+router.post('/start', requireAuth, normalizeUserId, startWork);
+
 router.post('/create', requireAuth, normalizeUserId, createWork);
+
 router.put('/update/:workId', requireAuth, normalizeUserId, updateWork);
+
 router.delete('/delete/:workId', requireAuth, normalizeUserId, removeWork);
+
 router.get('/', requireAuth, normalizeUserId, getAllWork);
+
 router.get(
   '/interval/:start/:end',
   requireAuth,
   normalizeUserId,
   getWorkByInterval
 );
+
 router.post('/analyze', requireAuth, normalizeUserId, analyzeWorkNotes);
+
 module.exports = router;

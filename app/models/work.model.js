@@ -11,7 +11,7 @@ const WorkSchema = new Schema(
     date: { type: Date, default: Date.now, required: true },
     start: { type: Date, default: Date.now, required: true },
     end: { type: Date },
-    duration: { type: Number },
+    duration: { type: Number, default: 0 },
     notes: { type: String },
     tasks: [{ type: Schema.Types.ObjectId, ref: 'Task' }],
     // taskAloc: [
